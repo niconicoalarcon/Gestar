@@ -69,73 +69,102 @@ export default function PregnancyOverview({ pregnancyInfo, userId }: PregnancyOv
 
   const weeks = calculateWeeks()
   const daysRemaining = calculateDaysRemaining()
+  const dueDateLabel = pregnancyInfo.due_date
+    ? new Date(pregnancyInfo.due_date).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })
+    : "-"
 
   return (
     <div className="space-y-6">
       <div className="grid gap-6 md:grid-cols-3">
-        <Card className="border-pink-100 bg-gradient-to-br from-pink-50 to-rose-50">
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-rose-600">Semanas de embarazo</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-rose-900">{weeks} semanas</div>
-            <p className="text-sm text-rose-600 mt-1">De 40 semanas totales</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-pink-100 bg-gradient-to-br from-amber-50 to-orange-50">
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-amber-600">Días restantes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-amber-900">{daysRemaining}</div>
-            <p className="text-sm text-amber-600 mt-1">Hasta la fecha estimada</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-pink-100 bg-gradient-to-br from-purple-50 to-pink-50">
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-purple-600">Fecha de parto</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg font-bold text-purple-900">
-              {new Date(pregnancyInfo.due_date).toLocaleDateString("es-ES", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
+        <Card className="border border-border">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Semanas de embarazo</CardTitle>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary">
+              <svg className="h-5 w-5 text-secondary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4l3 3"
+                />
+              </svg>
             </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-foreground">{weeks} semanas</div>
+            <p className="text-sm text-muted-foreground mt-1">De 40 semanas totales</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border border-border">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Días restantes</CardTitle>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary">
+              <svg className="h-5 w-5 text-secondary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7V3m8 4V3M5 11h14M7 21h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-foreground">{daysRemaining}</div>
+            <p className="text-sm text-muted-foreground mt-1">Hasta la fecha estimada</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border border-border">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Fecha de parto</CardTitle>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary">
+              <svg className="h-5 w-5 text-secondary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6v6h4"
+                />
+              </svg>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-lg font-semibold text-foreground">{dueDateLabel}</div>
+            <p className="text-sm text-muted-foreground mt-1">Fecha estimada</p>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="border-pink-100">
+      <Card className="border border-border">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-rose-900">Información del embarazo</CardTitle>
+          <CardTitle className="text-foreground">Información del embarazo</CardTitle>
+
           <Dialog open={isEditing} onOpenChange={setIsEditing}>
             <DialogTrigger asChild>
-              <Button variant="outline" className="border-pink-200 text-rose-700 hover:bg-pink-50 bg-transparent">
-                Editar
-              </Button>
+              <Button variant="outline">Editar</Button>
             </DialogTrigger>
+
             <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle className="text-rose-900">Editar información</DialogTitle>
+                <DialogTitle className="text-foreground">Editar información</DialogTitle>
               </DialogHeader>
+
               <div className="space-y-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-partner" className="text-rose-900">
+                  <Label htmlFor="edit-partner" className="text-foreground">
                     Nombre de tu pareja
                   </Label>
                   <Input
                     id="edit-partner"
                     value={formData.partner_name}
                     onChange={(e) => setFormData({ ...formData, partner_name: e.target.value })}
-                    className="border-pink-200"
                   />
                 </div>
+
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-due" className="text-rose-900">
+                  <Label htmlFor="edit-due" className="text-foreground">
                     Fecha probable de parto
                   </Label>
                   <Input
@@ -143,11 +172,11 @@ export default function PregnancyOverview({ pregnancyInfo, userId }: PregnancyOv
                     type="date"
                     value={formData.due_date}
                     onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
-                    className="border-pink-200"
                   />
                 </div>
+
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-last" className="text-rose-900">
+                  <Label htmlFor="edit-last" className="text-foreground">
                     Fecha última menstruación
                   </Label>
                   <Input
@@ -155,75 +184,75 @@ export default function PregnancyOverview({ pregnancyInfo, userId }: PregnancyOv
                     type="date"
                     value={formData.last_period_date || ""}
                     onChange={(e) => setFormData({ ...formData, last_period_date: e.target.value })}
-                    className="border-pink-200"
                   />
                 </div>
+
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-doctor" className="text-rose-900">
+                  <Label htmlFor="edit-doctor" className="text-foreground">
                     Nombre del médico
                   </Label>
                   <Input
                     id="edit-doctor"
                     value={formData.doctor_name || ""}
                     onChange={(e) => setFormData({ ...formData, doctor_name: e.target.value })}
-                    className="border-pink-200"
                   />
                 </div>
+
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-hospital" className="text-rose-900">
+                  <Label htmlFor="edit-hospital" className="text-foreground">
                     Hospital o clínica
                   </Label>
                   <Input
                     id="edit-hospital"
                     value={formData.hospital || ""}
                     onChange={(e) => setFormData({ ...formData, hospital: e.target.value })}
-                    className="border-pink-200"
                   />
                 </div>
+
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-blood" className="text-rose-900">
+                  <Label htmlFor="edit-blood" className="text-foreground">
                     Tipo de sangre
                   </Label>
                   <Input
                     id="edit-blood"
                     value={formData.blood_type || ""}
                     onChange={(e) => setFormData({ ...formData, blood_type: e.target.value })}
-                    className="border-pink-200"
                   />
                 </div>
-                <Button
-                  onClick={handleUpdate}
-                  disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-pink-400 to-rose-400 hover:from-pink-500 hover:to-rose-500"
-                >
+
+                <Button onClick={handleUpdate} disabled={isLoading} className="w-full">
                   {isLoading ? "Guardando..." : "Guardar cambios"}
                 </Button>
               </div>
             </DialogContent>
           </Dialog>
         </CardHeader>
+
         <CardContent>
           <dl className="grid gap-4 sm:grid-cols-2">
             <div>
-              <dt className="text-sm font-medium text-rose-600">Pareja</dt>
-              <dd className="text-base text-rose-900">{pregnancyInfo.partner_name}</dd>
+              <dt className="text-sm font-medium text-muted-foreground">Pareja</dt>
+              <dd className="text-base text-foreground">{pregnancyInfo.partner_name}</dd>
             </div>
+
             {pregnancyInfo.doctor_name && (
               <div>
-                <dt className="text-sm font-medium text-rose-600">Médico</dt>
-                <dd className="text-base text-rose-900">{pregnancyInfo.doctor_name}</dd>
+                <dt className="text-sm font-medium text-muted-foreground">Médico</dt>
+                <dd className="text-base text-foreground">{pregnancyInfo.doctor_name}</dd>
               </div>
             )}
+
             {pregnancyInfo.hospital && (
               <div>
-                <dt className="text-sm font-medium text-rose-600">Hospital</dt>
-                <dd className="text-base text-rose-900">{pregnancyInfo.hospital}</dd>
+                <dt className="text-sm font-medium text-muted-foreground">Hospital</dt>
+                <dd className="text-base text-foreground">{pregnancyInfo.hospital}</dd>
               </div>
             )}
+
             {pregnancyInfo.blood_type && (
               <div>
-                <dt className="text-sm font-medium text-rose-600">Tipo de sangre</dt>
-                <dd className="text-base text-rose-900">{pregnancyInfo.blood_type}</dd>
+                <dt className="text-sm font-medium text-muted-foreground">Tipo de sangre</dt>
+                <dd className="text-base text-foreground">{pregnancyInfo.blood_type}</dd>
               </div>
             )}
           </dl>

@@ -57,7 +57,7 @@ export default function NotesSection({ userId }: NotesSectionProps) {
   // ✅ Fix timezone: interpretar YYYY-MM-DD como fecha local
   const formatDateLocal = (dateStr: string) => {
     const [y, m, d] = dateStr.split("-").map(Number)
-    const dt = new Date(y, m - 1, d) // local time (no UTC shift)
+    const dt = new Date(y, m - 1, d)
     return dt.toLocaleDateString("es-ES", {
       weekday: "long",
       year: "numeric",
@@ -139,7 +139,6 @@ export default function NotesSection({ userId }: NotesSectionProps) {
 
   const handleDelete = async (noteId: string) => {
     if (!confirm("¿Estás seguro de eliminar esta nota?")) return
-
     const supabase = createClient()
     const { error } = await supabase.from("daily_notes").delete().eq("id", noteId)
 
@@ -154,7 +153,7 @@ export default function NotesSection({ userId }: NotesSectionProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold text-rose-900">Notas diarias</h2>
+        <h2 className="text-2xl font-semibold text-foreground">Notas diarias</h2>
 
         <Dialog
           open={isOpen}
@@ -169,7 +168,6 @@ export default function NotesSection({ userId }: NotesSectionProps) {
                 resetForm()
                 setIsOpen(true)
               }}
-              className="bg-gradient-to-r from-pink-400 to-rose-400 hover:from-pink-500 hover:to-rose-500"
             >
               Nueva nota
             </Button>
@@ -177,12 +175,14 @@ export default function NotesSection({ userId }: NotesSectionProps) {
 
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-rose-900">{editingNote ? "Editar nota" : "Nueva nota diaria"}</DialogTitle>
+              <DialogTitle className="text-foreground">
+                {editingNote ? "Editar nota" : "Nueva nota diaria"}
+              </DialogTitle>
             </DialogHeader>
 
             <div className="space-y-4">
               <div className="grid gap-2">
-                <Label htmlFor="note-date" className="text-rose-900">
+                <Label htmlFor="note-date" className="text-foreground">
                   Fecha
                 </Label>
                 <Input
@@ -191,12 +191,11 @@ export default function NotesSection({ userId }: NotesSectionProps) {
                   value={formData.note_date}
                   onChange={(e) => setFormData({ ...formData, note_date: e.target.value })}
                   disabled={!!editingNote}
-                  className="border-pink-200"
                 />
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="symptoms" className="text-rose-900">
+                <Label htmlFor="symptoms" className="text-foreground">
                   Síntomas
                 </Label>
                 <Input
@@ -204,12 +203,11 @@ export default function NotesSection({ userId }: NotesSectionProps) {
                   value={formData.symptoms}
                   onChange={(e) => setFormData({ ...formData, symptoms: e.target.value })}
                   placeholder="Ej: Náuseas, cansancio..."
-                  className="border-pink-200"
                 />
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="mood" className="text-rose-900">
+                <Label htmlFor="mood" className="text-foreground">
                   Estado de ánimo
                 </Label>
                 <Input
@@ -217,12 +215,11 @@ export default function NotesSection({ userId }: NotesSectionProps) {
                   value={formData.mood}
                   onChange={(e) => setFormData({ ...formData, mood: e.target.value })}
                   placeholder="Ej: Feliz, ansiosa, tranquila..."
-                  className="border-pink-200"
                 />
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="weight" className="text-rose-900">
+                <Label htmlFor="weight" className="text-foreground">
                   Peso (kg)
                 </Label>
                 <Input
@@ -232,12 +229,11 @@ export default function NotesSection({ userId }: NotesSectionProps) {
                   value={formData.weight}
                   onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
                   placeholder="Ej: 65.5"
-                  className="border-pink-200"
                 />
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="notes" className="text-rose-900">
+                <Label htmlFor="notes" className="text-foreground">
                   Notas adicionales
                 </Label>
                 <Textarea
@@ -246,15 +242,10 @@ export default function NotesSection({ userId }: NotesSectionProps) {
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   placeholder="Cualquier observación importante del día..."
                   rows={4}
-                  className="border-pink-200"
                 />
               </div>
 
-              <Button
-                onClick={handleSave}
-                disabled={isSaving}
-                className="w-full bg-gradient-to-r from-pink-400 to-rose-400 hover:from-pink-500 hover:to-rose-500"
-              >
+              <Button onClick={handleSave} disabled={isSaving} className="w-full">
                 {isSaving ? "Guardando..." : editingNote ? "Actualizar nota" : "Guardar nota"}
               </Button>
             </div>
@@ -264,30 +255,22 @@ export default function NotesSection({ userId }: NotesSectionProps) {
 
       <div className="grid gap-4">
         {notes.map((note) => (
-          <Card key={note.id} className="border-pink-100">
+          <Card key={note.id} className="border border-border">
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div>
-                  <CardTitle className="text-lg text-rose-900">
-                    {/* ✅ FIX: mostrar fecha sin corrimiento por zona horaria */}
-                    {formatDateLocal(note.note_date)}
-                  </CardTitle>
+                  <CardTitle className="text-lg text-foreground">{formatDateLocal(note.note_date)}</CardTitle>
                 </div>
 
                 <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(note)}
-                    className="border-pink-200 text-rose-700 hover:bg-pink-50"
-                  >
+                  <Button variant="outline" size="sm" onClick={() => handleEdit(note)}>
                     Editar
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => handleDelete(note.id)}
-                    className="border-red-200 text-red-600 hover:bg-red-50"
+                    className="text-destructive"
                   >
                     Eliminar
                   </Button>
@@ -298,30 +281,30 @@ export default function NotesSection({ userId }: NotesSectionProps) {
             <CardContent>
               <div className="space-y-3">
                 {note.symptoms && (
-                  <div>
-                    <span className="text-sm font-medium text-rose-600">Síntomas: </span>
-                    <span className="text-sm text-rose-900">{note.symptoms}</span>
+                  <div className="text-sm">
+                    <span className="font-medium text-muted-foreground">Síntomas: </span>
+                    <span className="text-foreground">{note.symptoms}</span>
                   </div>
                 )}
 
                 {note.mood && (
-                  <div>
-                    <span className="text-sm font-medium text-rose-600">Estado de ánimo: </span>
-                    <span className="text-sm text-rose-900">{note.mood}</span>
+                  <div className="text-sm">
+                    <span className="font-medium text-muted-foreground">Estado de ánimo: </span>
+                    <span className="text-foreground">{note.mood}</span>
                   </div>
                 )}
 
                 {note.weight != null && (
-                  <div>
-                    <span className="text-sm font-medium text-rose-600">Peso: </span>
-                    <span className="text-sm text-rose-900">{note.weight} kg</span>
+                  <div className="text-sm">
+                    <span className="font-medium text-muted-foreground">Peso: </span>
+                    <span className="text-foreground">{note.weight} kg</span>
                   </div>
                 )}
 
                 {note.notes && (
-                  <div>
-                    <span className="text-sm font-medium text-rose-600">Notas: </span>
-                    <p className="text-sm text-rose-900 mt-1 whitespace-pre-wrap">{note.notes}</p>
+                  <div className="text-sm">
+                    <span className="font-medium text-muted-foreground">Notas: </span>
+                    <p className="mt-1 whitespace-pre-wrap text-foreground">{note.notes}</p>
                   </div>
                 )}
               </div>
@@ -331,9 +314,9 @@ export default function NotesSection({ userId }: NotesSectionProps) {
       </div>
 
       {notes.length === 0 && (
-        <Card className="border-pink-100">
+        <Card className="border border-border">
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <svg className="h-16 w-16 text-pink-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="h-16 w-16 text-muted-foreground/60 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -341,7 +324,7 @@ export default function NotesSection({ userId }: NotesSectionProps) {
                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
               />
             </svg>
-            <p className="text-rose-600 text-center">
+            <p className="text-muted-foreground text-center">
               Aún no has creado ninguna nota.
               <br />
               Comienza a documentar tus síntomas y observaciones diarias.

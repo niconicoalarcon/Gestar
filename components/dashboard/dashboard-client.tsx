@@ -30,10 +30,18 @@ export default function DashboardClient({ user, pregnancyInfo }: DashboardClient
     return <SetupPregnancyInfo userId={user.id} />
   }
 
+  const tabBase =
+    "px-6 py-3 font-medium transition-colors -mb-px border-b-2 border-transparent " +
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 " +
+    "focus-visible:ring-offset-background rounded-t-md"
+
+  const tabActive = "border-primary text-foreground"
+  const tabInactive = "text-muted-foreground hover:text-foreground"
+
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="sticky top-0 z-10 border-b border-border bg-card/80 backdrop-blur-sm">
+        <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
               <svg className="h-6 w-6 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,6 +55,7 @@ export default function DashboardClient({ user, pregnancyInfo }: DashboardClient
             </div>
             <h1 className="text-xl font-semibold text-foreground">Mi Embarazo</h1>
           </div>
+
           <Button onClick={handleSignOut} variant="outline">
             Cerrar sesión
           </Button>
@@ -54,34 +63,30 @@ export default function DashboardClient({ user, pregnancyInfo }: DashboardClient
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-6 flex gap-2 border-b">
+        <div className="mb-6 flex gap-2 border-b border-border">
           <button
+            type="button"
             onClick={() => setActiveTab("overview")}
-            className={`px-6 py-3 font-medium transition-colors ${
-              activeTab === "overview"
-                ? "border-b-2 border-primary text-foreground"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+            aria-current={activeTab === "overview" ? "page" : undefined}
+            className={`${tabBase} ${activeTab === "overview" ? tabActive : tabInactive}`}
           >
             Resumen
           </button>
+
           <button
+            type="button"
             onClick={() => setActiveTab("documents")}
-            className={`px-6 py-3 font-medium transition-colors ${
-              activeTab === "documents"
-                ? "border-b-2 border-primary text-foreground"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+            aria-current={activeTab === "documents" ? "page" : undefined}
+            className={`${tabBase} ${activeTab === "documents" ? tabActive : tabInactive}`}
           >
             Documentos
           </button>
+
           <button
+            type="button"
             onClick={() => setActiveTab("notes")}
-            className={`px-6 py-3 font-medium transition-colors ${
-              activeTab === "notes"
-                ? "border-b-2 border-primary text-foreground"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+            aria-current={activeTab === "notes" ? "page" : undefined}
+            className={`${tabBase} ${activeTab === "notes" ? tabActive : tabInactive}`}
           >
             Notas diarias
           </button>

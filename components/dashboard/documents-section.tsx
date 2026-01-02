@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -17,7 +16,7 @@ interface DocumentRow {
   id: string
   title: string
   description: string | null
-  file_url: string // ⚠️ aquí vamos a guardar el PATH del storage (ej: userId/archivo.pdf)
+  file_url: string // path del storage (ej: userId/archivo.pdf)
   file_type: string
   upload_date: string
   document_date: string | null
@@ -53,25 +52,17 @@ export default function DocumentsSection({ userId }: DocumentsSectionProps) {
   }, [])
 
   const extractStoragePath = (value: string) => {
-    // Si ya es path tipo "uuid/archivo.pdf", lo devolvemos.
     if (!value) return value
     if (!value.startsWith("http")) return value
 
-    // Si viene una URL vieja (public), intentamos extraer el path
     const marker = `/storage/v1/object/${BUCKET}/`
     const idx = value.indexOf(marker)
-    if (idx !== -1) {
-      return value.slice(idx + marker.length)
-    }
+    if (idx !== -1) return value.slice(idx + marker.length)
 
-    // Otro caso: /medical-documents/...
     const marker2 = `/${BUCKET}/`
     const idx2 = value.indexOf(marker2)
-    if (idx2 !== -1) {
-      return value.slice(idx2 + marker2.length)
-    }
+    if (idx2 !== -1) return value.slice(idx2 + marker2.length)
 
-    // Si no se puede parsear, devolvemos el original
     return value
   }
 
@@ -97,8 +88,6 @@ export default function DocumentsSection({ userId }: DocumentsSectionProps) {
 
     const rows = (data ?? []) as DocumentRow[]
 
-    // Generar signed URLs para mostrar (bucket privado)
-    // Si tenés muchos documentos, esto puede ser pesado; pero para empezar está bien.
     const withSigned: DocumentView[] = await Promise.all(
       rows.map(async (doc) => {
         try {
@@ -116,19 +105,16 @@ export default function DocumentsSection({ userId }: DocumentsSectionProps) {
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0])
-    }
+    if (e.target.files && e.target.files[0]) setSelectedFile(e.target.files[0])
   }
 
   const handleUpload = async () => {
     if (!selectedFile || !title) return
-
     setIsUploading(true)
+
     const supabase = createClient()
 
     try {
-      // ✅ usar el usuario autenticado real (importante para policies RLS)
       const {
         data: { user },
         error: userError,
@@ -137,7 +123,6 @@ export default function DocumentsSection({ userId }: DocumentsSectionProps) {
       if (userError) throw userError
       if (!user) throw new Error("No hay sesión activa. Inicia sesión para subir documentos.")
 
-      // Subir archivo a Storage (bucket privado) bajo carpeta user.id/
       const fileExt = selectedFile.name.split(".").pop() || "bin"
       const safeName = selectedFile.name.replace(/[^\w.\-]+/g, "_")
       const path = `${user.id}/${Date.now()}-${safeName}.${fileExt}`
@@ -149,14 +134,12 @@ export default function DocumentsSection({ userId }: DocumentsSectionProps) {
       })
       if (uploadError) throw uploadError
 
-      // Guardar metadata en la DB:
-      // ⚠️ Guardamos el PATH (no URL) porque el bucket es privado
       const fileType = selectedFile.type.includes("pdf") ? "pdf" : "image"
       const { error: dbError } = await supabase.from("medical_documents").insert({
         user_id: user.id,
         title,
         description,
-        file_url: path, // ✅ path de storage
+        file_url: path,
         file_type: fileType,
         file_size: selectedFile.size,
         document_date: documentDate || null,
@@ -183,11 +166,9 @@ export default function DocumentsSection({ userId }: DocumentsSectionProps) {
 
   const handleDelete = async (docId: string, storedPathOrUrl: string) => {
     if (!confirm("¿Estás seguro de eliminar este documento?")) return
-
     const supabase = createClient()
 
     try {
-      // En bucket privado, guardamos path en DB (igual hacemos extract por compatibilidad)
       const path = extractStoragePath(storedPathOrUrl)
 
       const { error: storageError } = await supabase.storage.from(BUCKET).remove([path])
@@ -216,34 +197,28 @@ export default function DocumentsSection({ userId }: DocumentsSectionProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold text-rose-900">Documentos médicos</h2>
+        <h2 className="text-2xl font-semibold text-foreground">Documentos médicos</h2>
+
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-pink-400 to-rose-400 hover:from-pink-500 hover:to-rose-500">
-              Subir documento
-            </Button>
+            <Button>Subir documento</Button>
           </DialogTrigger>
+
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-rose-900">Subir nuevo documento</DialogTitle>
+              <DialogTitle className="text-foreground">Subir nuevo documento</DialogTitle>
             </DialogHeader>
 
             <div className="space-y-4">
               <div className="grid gap-2">
-                <Label htmlFor="file" className="text-rose-900">
+                <Label htmlFor="file" className="text-foreground">
                   Archivo (PDF o imagen)
                 </Label>
-                <Input
-                  id="file"
-                  type="file"
-                  accept=".pdf,.png,.jpg,.jpeg"
-                  onChange={handleFileChange}
-                  className="border-pink-200"
-                />
+                <Input id="file" type="file" accept=".pdf,.png,.jpg,.jpeg" onChange={handleFileChange} />
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="title" className="text-rose-900">
+                <Label htmlFor="title" className="text-foreground">
                   Título *
                 </Label>
                 <Input
@@ -251,16 +226,15 @@ export default function DocumentsSection({ userId }: DocumentsSectionProps) {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Ej: Ecografía 12 semanas"
-                  className="border-pink-200"
                 />
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="category" className="text-rose-900">
+                <Label htmlFor="category" className="text-foreground">
                   Categoría
                 </Label>
                 <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger className="border-pink-200">
+                  <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -273,20 +247,14 @@ export default function DocumentsSection({ userId }: DocumentsSectionProps) {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="doc-date" className="text-rose-900">
+                <Label htmlFor="doc-date" className="text-foreground">
                   Fecha del documento
                 </Label>
-                <Input
-                  id="doc-date"
-                  type="date"
-                  value={documentDate}
-                  onChange={(e) => setDocumentDate(e.target.value)}
-                  className="border-pink-200"
-                />
+                <Input id="doc-date" type="date" value={documentDate} onChange={(e) => setDocumentDate(e.target.value)} />
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="description" className="text-rose-900">
+                <Label htmlFor="description" className="text-foreground">
                   Descripción
                 </Label>
                 <Textarea
@@ -294,15 +262,10 @@ export default function DocumentsSection({ userId }: DocumentsSectionProps) {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Notas adicionales..."
-                  className="border-pink-200"
                 />
               </div>
 
-              <Button
-                onClick={handleUpload}
-                disabled={isUploading || !selectedFile || !title}
-                className="w-full bg-gradient-to-r from-pink-400 to-rose-400 hover:from-pink-500 hover:to-rose-500"
-              >
+              <Button onClick={handleUpload} disabled={isUploading || !selectedFile || !title} className="w-full">
                 {isUploading ? "Subiendo..." : "Subir documento"}
               </Button>
             </div>
@@ -312,19 +275,20 @@ export default function DocumentsSection({ userId }: DocumentsSectionProps) {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {documents.map((doc) => (
-          <Card key={doc.id} className="border-pink-100 hover:shadow-md transition-shadow">
+          <Card key={doc.id} className="border border-border hover:shadow-md transition-shadow">
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <CardTitle className="text-base text-rose-900">{doc.title}</CardTitle>
-                  <p className="text-xs text-rose-600 mt-1">{getCategoryLabel(doc.category)}</p>
+                  <CardTitle className="text-base text-foreground">{doc.title}</CardTitle>
+                  <p className="text-xs text-muted-foreground mt-1">{getCategoryLabel(doc.category)}</p>
                 </div>
               </div>
             </CardHeader>
 
             <CardContent>
-              {doc.description && <p className="text-sm text-rose-700 mb-3 line-clamp-2">{doc.description}</p>}
-              <div className="text-xs text-rose-600 mb-3">
+              {doc.description && <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{doc.description}</p>}
+
+              <div className="text-xs text-muted-foreground mb-3">
                 {doc.document_date && <p>Fecha: {new Date(doc.document_date).toLocaleDateString("es-ES")}</p>}
                 <p>Subido: {new Date(doc.upload_date).toLocaleDateString("es-ES")}</p>
               </div>
@@ -334,7 +298,6 @@ export default function DocumentsSection({ userId }: DocumentsSectionProps) {
                   variant="outline"
                   size="sm"
                   onClick={async () => {
-                    // refrescar la signed URL justo antes de ver
                     try {
                       const signedUrl = await getSignedUrlForPath(doc.file_url)
                       setViewingDocument({ ...doc, signedUrl })
@@ -343,7 +306,7 @@ export default function DocumentsSection({ userId }: DocumentsSectionProps) {
                       alert("No se pudo generar el enlace para ver el documento.")
                     }
                   }}
-                  className="flex-1 border-pink-200 text-rose-700 hover:bg-pink-50"
+                  className="flex-1"
                 >
                   Ver
                 </Button>
@@ -352,7 +315,7 @@ export default function DocumentsSection({ userId }: DocumentsSectionProps) {
                   variant="outline"
                   size="sm"
                   onClick={() => handleDelete(doc.id, doc.file_url)}
-                  className="border-red-200 text-red-600 hover:bg-red-50"
+                  className="text-destructive"
                 >
                   Eliminar
                 </Button>
@@ -363,9 +326,9 @@ export default function DocumentsSection({ userId }: DocumentsSectionProps) {
       </div>
 
       {documents.length === 0 && (
-        <Card className="border-pink-100">
+        <Card className="border border-border">
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <p className="text-rose-600 text-center">
+            <p className="text-muted-foreground text-center">
               Aún no has subido ningún documento.
               <br />
               Comienza agregando ecografías, análisis o recetas médicas.
@@ -377,21 +340,21 @@ export default function DocumentsSection({ userId }: DocumentsSectionProps) {
       <Dialog open={!!viewingDocument} onOpenChange={() => setViewingDocument(null)}>
         <DialogContent className="max-w-4xl max-h-[90vh]">
           <DialogHeader>
-            <DialogTitle className="text-rose-900">{viewingDocument?.title}</DialogTitle>
+            <DialogTitle className="text-foreground">{viewingDocument?.title}</DialogTitle>
           </DialogHeader>
 
           <div className="overflow-auto max-h-[70vh]">
             {viewingDocument?.file_type === "pdf" ? (
               <iframe
                 src={viewingDocument?.signedUrl}
-                className="w-full h-[70vh]"
+                className="w-full h-[70vh] rounded-md border border-border bg-background"
                 title={viewingDocument?.title || "documento"}
               />
             ) : (
               <img
                 src={viewingDocument?.signedUrl || "/placeholder.svg"}
                 alt={viewingDocument?.title || "documento"}
-                className="w-full h-auto"
+                className="w-full h-auto rounded-md border border-border bg-background"
               />
             )}
           </div>

@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -25,10 +24,7 @@ export default function LoginPage() {
     setError(null)
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) throw error
       router.push("/dashboard")
       router.refresh()
@@ -40,12 +36,12 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center p-6 bg-gradient-to-br from-pink-50 via-rose-50 to-amber-50">
+    <div className="flex min-h-screen w-full items-center justify-center p-6 bg-background">
       <div className="w-full max-w-sm">
-        <Card className="border-pink-100 shadow-lg">
+        <Card className="shadow-lg">
           <CardHeader className="text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-pink-400 to-rose-400">
-              <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary">
+              <svg className="h-8 w-8 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -54,18 +50,16 @@ export default function LoginPage() {
                 />
               </svg>
             </div>
-            <CardTitle className="text-2xl text-rose-900">Bienvenida</CardTitle>
-            <CardDescription className="text-rose-600">
-              Ingresa tus datos para acceder al diario de tu embarazo
-            </CardDescription>
+
+            <CardTitle className="text-2xl">Comencemos tu seguimiento de embarazo</CardTitle>
+            <CardDescription>Ingresa tus datos para acceder al diario de tu embarazo</CardDescription>
           </CardHeader>
+
           <CardContent>
             <form onSubmit={handleLogin}>
               <div className="flex flex-col gap-6">
                 <div className="grid gap-2">
-                  <Label htmlFor="email" className="text-rose-900">
-                    Email
-                  </Label>
+                  <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
                     type="email"
@@ -73,37 +67,34 @@ export default function LoginPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="border-pink-200 focus:border-pink-400"
                   />
                 </div>
+
                 <div className="grid gap-2">
-                  <Label htmlFor="password" className="text-rose-900">
-                    Contraseña
-                  </Label>
+                  <Label htmlFor="password">Contraseña</Label>
                   <Input
                     id="password"
                     type="password"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="border-pink-200 focus:border-pink-400"
                   />
                 </div>
-                {error && <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">{error}</p>}
-                <Button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-pink-400 to-rose-400 hover:from-pink-500 hover:to-rose-500"
-                  disabled={isLoading}
-                >
+
+                {error && (
+                  <p className="text-sm text-destructive bg-muted p-3 rounded-lg border border-border">
+                    {error}
+                  </p>
+                )}
+
+                <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? "Ingresando..." : "Ingresar"}
                 </Button>
               </div>
-              <div className="mt-4 text-center text-sm text-rose-600">
+
+              <div className="mt-4 text-center text-sm text-muted-foreground">
                 ¿No tienes una cuenta?{" "}
-                <Link
-                  href="/auth/sign-up"
-                  className="font-semibold text-rose-700 underline underline-offset-4 hover:text-rose-800"
-                >
+                <Link href="/auth/sign-up" className="font-semibold text-foreground underline underline-offset-4">
                   Registrarse
                 </Link>
               </div>

@@ -45,7 +45,7 @@ export default async function HomePage() {
         </div>
 
         <div className="grid gap-6 sm:grid-cols-3 mt-12 text-left">
-          <div className="bg-card backdrop-blur-sm p-6 rounded-lg border">
+          <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary mb-3">
               <svg className="h-5 w-5 text-secondary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -62,7 +62,7 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="bg-card backdrop-blur-sm p-6 rounded-lg border">
+          <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary mb-3">
               <svg className="h-5 w-5 text-secondary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -79,7 +79,7 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="bg-card backdrop-blur-sm p-6 rounded-lg border">
+          <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary mb-3">
               <svg className="h-5 w-5 text-secondary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
