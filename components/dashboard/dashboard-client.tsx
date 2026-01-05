@@ -9,6 +9,7 @@ import SetupPregnancyInfo from "./setup-pregnancy-info"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
+import AppointmentsSection from "./AppointmentsSection"
 
 interface DashboardClientProps {
   user: User
@@ -16,7 +17,7 @@ interface DashboardClientProps {
 }
 
 export default function DashboardClient({ user, pregnancyInfo }: DashboardClientProps) {
-  const [activeTab, setActiveTab] = useState<"overview" | "documents" | "notes">("overview")
+  const [activeTab, setActiveTab] = useState<"overview" | "documents" | "notes" | "appointments">("overview")
   const router = useRouter()
 
   const handleSignOut = async () => {
@@ -90,11 +91,20 @@ export default function DashboardClient({ user, pregnancyInfo }: DashboardClient
           >
             Notas diarias
           </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("appointments")}
+            aria-current={activeTab === "appointments" ? "page" : undefined}
+            className={`${tabBase} ${activeTab === "appointments" ? tabActive : tabInactive}`}
+          >
+            Citas médicas
+          </button>
         </div>
 
         {activeTab === "overview" && <PregnancyOverview pregnancyInfo={pregnancyInfo} userId={user.id} />}
         {activeTab === "documents" && <DocumentsSection userId={user.id} />}
         {activeTab === "notes" && <NotesSection userId={user.id} />}
+        {activeTab === "appointments" && <AppointmentsSection userId={user.id} />}
       </div>
     </div>
   )
