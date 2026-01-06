@@ -187,3 +187,13 @@
     box-shadow: 0 4px 20px -2px oklch(0.68 0.24 20 / 0.25);
   }
 }
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

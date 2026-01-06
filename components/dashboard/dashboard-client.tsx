@@ -1,15 +1,14 @@
 "use client"
-
 import { useState } from "react"
 import type { User } from "@supabase/supabase-js"
 import PregnancyOverview from "./pregnancy-overview"
 import DocumentsSection from "./documents-section"
 import NotesSection from "./notes-section"
+import AppointmentsSection from "./AppointmentsSection"
 import SetupPregnancyInfo from "./setup-pregnancy-info"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
-import AppointmentsSection from "./AppointmentsSection"
 
 interface DashboardClientProps {
   user: User
@@ -32,10 +31,9 @@ export default function DashboardClient({ user, pregnancyInfo }: DashboardClient
   }
 
   const tabBase =
-    "px-6 py-3 font-medium transition-colors -mb-px border-b-2 border-transparent " +
+    "px-4 sm:px-6 py-3 font-medium transition-colors -mb-px border-b-2 border-transparent " +
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 " +
-    "focus-visible:ring-offset-background rounded-t-md"
-
+    "focus-visible:ring-offset-background rounded-t-md text-sm sm:text-base whitespace-nowrap"
   const tabActive = "border-primary text-foreground"
   const tabInactive = "text-muted-foreground hover:text-foreground"
 
@@ -56,55 +54,55 @@ export default function DashboardClient({ user, pregnancyInfo }: DashboardClient
             </div>
             <h1 className="text-xl font-semibold text-foreground">Mi Embarazo</h1>
           </div>
-
-          <Button onClick={handleSignOut} variant="outline">
+          <Button onClick={handleSignOut} variant="outline" size="sm">
             Cerrar sesión
           </Button>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-6 flex gap-2 border-b border-border">
-          <button
-            type="button"
-            onClick={() => setActiveTab("overview")}
-            aria-current={activeTab === "overview" ? "page" : undefined}
-            className={`${tabBase} ${activeTab === "overview" ? tabActive : tabInactive}`}
-          >
-            Resumen
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab("documents")}
-            aria-current={activeTab === "documents" ? "page" : undefined}
-            className={`${tabBase} ${activeTab === "documents" ? tabActive : tabInactive}`}
-          >
-            Documentos
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab("notes")}
-            aria-current={activeTab === "notes" ? "page" : undefined}
-            className={`${tabBase} ${activeTab === "notes" ? tabActive : tabInactive}`}
-          >
-            Notas diarias
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("appointments")}
-            aria-current={activeTab === "appointments" ? "page" : undefined}
-            className={`${tabBase} ${activeTab === "appointments" ? tabActive : tabInactive}`}
-          >
-            Citas médicas
-          </button>
+      <div className="container mx-auto px-4 py-6 sm:py-8">
+        {/* Tabs con scroll horizontal en móvil */}
+        <div className="mb-6 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div className="flex gap-1 sm:gap-2 border-b border-border overflow-x-auto scrollbar-hide">
+            <button
+              type="button"
+              onClick={() => setActiveTab("overview")}
+              aria-current={activeTab === "overview" ? "page" : undefined}
+              className={`${tabBase} ${activeTab === "overview" ? tabActive : tabInactive}`}
+            >
+              Resumen
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("appointments")}
+              aria-current={activeTab === "appointments" ? "page" : undefined}
+              className={`${tabBase} ${activeTab === "appointments" ? tabActive : tabInactive}`}
+            >
+              Citas
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("documents")}
+              aria-current={activeTab === "documents" ? "page" : undefined}
+              className={`${tabBase} ${activeTab === "documents" ? tabActive : tabInactive}`}
+            >
+              Documentos
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("notes")}
+              aria-current={activeTab === "notes" ? "page" : undefined}
+              className={`${tabBase} ${activeTab === "notes" ? tabActive : tabInactive}`}
+            >
+              Notas
+            </button>
+          </div>
         </div>
 
         {activeTab === "overview" && <PregnancyOverview pregnancyInfo={pregnancyInfo} userId={user.id} />}
+        {activeTab === "appointments" && <AppointmentsSection userId={user.id} />}
         {activeTab === "documents" && <DocumentsSection userId={user.id} />}
         {activeTab === "notes" && <NotesSection userId={user.id} />}
-        {activeTab === "appointments" && <AppointmentsSection userId={user.id} />}
       </div>
     </div>
   )
